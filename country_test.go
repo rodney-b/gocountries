@@ -28,13 +28,13 @@ func TestCountriesByName(t *testing.T) {
 }
 
 func TestCountriesByFullName(t *testing.T) {
-    countries, err := CountriesByFullName("Ital")
-    
-    if len(countries) > 0 {
-        t.Errorf("Unexpected: Found country using partial name. There is no country named 'Ital'. Only full names should work.")
-    }
+	countries, err := CountriesByFullName("Ital")
 
-    countries, err = CountriesByFullName("Italy")
+	if len(countries) > 0 {
+		t.Errorf("Unexpected: Found country using partial name. There is no country named 'Ital'. Only full names should work.")
+	}
+
+	countries, err = CountriesByFullName("Italy")
 
 	if err != nil {
 		t.Errorf("Got unexpected error for requested country 'italy': %v", err)

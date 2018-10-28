@@ -65,11 +65,11 @@ func doRestcountriesCall(apiSuffix string) ([]byte, error) {
 }
 
 func doCountriesByName(name string, isFullName bool) ([]Country, error) {
-    apiSuffix := "name/%s"
+	apiSuffix := "name/%s"
 
-    if isFullName {
-        apiSuffix += "?fullText=true"
-    }
+	if isFullName {
+		apiSuffix += "?fullText=true"
+	}
 
 	resData, err := doRestcountriesCall(fmt.Sprintf(apiSuffix, name))
 
@@ -86,12 +86,12 @@ func doCountriesByName(name string, isFullName bool) ([]Country, error) {
 
 // CountriesByName searches for countries by their name. It can be the native name or partial name
 func CountriesByName(name string) ([]Country, error) {
-    return doCountriesByName(name, false)
+	return doCountriesByName(name, false)
 }
 
 // CountriesByFullName searches for countries by their full name
 func CountriesByFullName(name string) ([]Country, error) {
-    return doCountriesByName(name, true)
+	return doCountriesByName(name, true)
 }
 
 // CountriesByCapital searches for countries with capital city matching 'name'
