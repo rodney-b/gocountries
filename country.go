@@ -2,7 +2,6 @@ package gocountries
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -55,7 +54,7 @@ func doRestcountriesCall(apiSuffix string) ([]byte, error) {
 	}
 	defer res.Body.Close()
 	if res.StatusCode != http.StatusOK {
-		e := errors.New(fmt.Sprintf("Unexpected API status code %s", res.Status))
+		e := fmt.Errorf("Unexpected API status code %s", res.Status)
 		return []byte{}, e
 	}
 	body, err := ioutil.ReadAll(res.Body)
@@ -65,9 +64,14 @@ func doRestcountriesCall(apiSuffix string) ([]byte, error) {
 	return body, nil
 }
 
-// CountriesByName searches for countries by their name. It can be the native name or partial name
-func CountriesByName(name string) ([]Country, error) {
-	resData, err := doRestcountriesCall(fmt.Sprintf("name/%s", name))
+func doCountriesByName(name string, isFullName bool) ([]Country, error) {
+	apiSuffix := "name/%s"
+
+	if isFullName {
+		apiSuffix += "?fullText=true"
+	}
+
+	resData, err := doRestcountriesCall(fmt.Sprintf(apiSuffix, name))
 
 	if err != nil {
 		return nil, err
@@ -80,9 +84,34 @@ func CountriesByName(name string) ([]Country, error) {
 	return c, nil
 }
 
+// CountriesByName searches for countries by their name. It can be the native name or partial name
+func CountriesByName(name string) ([]Country, error) {
+	return doCountriesByName(name, false)
+}
+
+// CountriesByFullName searches for countries by their full name
+func CountriesByFullName(name string) ([]Country, error) {
+	return doCountriesByName(name, true)
+}
+
 // CountriesByCapital searches for countries with capital city matching 'name'
 func CountriesByCapital(name string) ([]Country, error) {
 	resData, err := doRestcountriesCall(fmt.Sprintf("capital/%s", name))
+
+	if err != nil {
+		return nil, err
+	}
+	var c []Country
+	err = json.Unmarshal(resData, &c)
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+// AllCountries retrieves every country
+func AllCountries() ([]Country, error) {
+	resData, err := doRestcountriesCall(fmt.Sprintf("all"))
 
 	if err != nil {
 		return nil, err
